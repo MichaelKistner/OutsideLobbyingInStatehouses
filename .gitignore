@@ -1,9 +1,10 @@
-# Ignore data folders
+# Ignore data and data folders
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
 Initial Data
+Processed Data
 *.csv
 *.dta
 *.RData
