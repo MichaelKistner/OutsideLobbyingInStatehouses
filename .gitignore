@@ -1,4 +1,11 @@
+# Ignore data folders
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+Initial Data
+*.csv
+*.dta
+*.RData
+*.rda
+*.rds
