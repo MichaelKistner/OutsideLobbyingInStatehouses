@@ -4,7 +4,8 @@ library(arrow)
 library(tidyverse)
 
 # Load parquet files for the CHORUS data
-positions <- read_parquet("Initial Data/Chorus/positions.parquet")
+positions <- read_parquet("Initial Data/Chorus/positions.parquet") %>%
+  distinct() # note: the original data has a bad duplicates problem
 bills <- read_parquet("Initial Data/Chorus/bills.parquet")
 clients <- read_parquet("Initial Data/Chorus/clients.parquet")
 
@@ -14,7 +15,7 @@ load("Initial Data/Witness Slips/Witness Slips Dataframe (Cleaned).Rda")
 ### Compare Illinois and Arizona Data Coverage ---------------------------------
 # Get Arizona data and format
 positions_az <- positions %>% 
-  filter(state == "AZ", year > 2006) %>%
+  filter(state == "AZ", year > 2012) %>% # very few examples before this point
   select(-c(lobbyist_firm_name, committee, docket_number, docket_prefix)) %>%
   rename(group_name = client_name,
          position_taker = lobbyist_rep_name,
@@ -46,7 +47,8 @@ positions_il <- slips %>%
   rename(position_numeric = position,
          position_taker = witness_name) 
 
-# Save data samples for review
+# Save random data samples for manual review
+set.seed(100)
 slice_sample(positions_az, n = 100) %>%
   write_csv("Processed Data/Sample of Arizona Position Data.csv")
 
@@ -64,7 +66,7 @@ graphing_df <- bind_rows(positions_az, positions_il) %>%
   summarize(count = n()) %>%
   na.omit()
 
-# Create plot
+# Create plot of position-taking over time
 ggplot(graphing_df, aes(x = session, y = count, group = position)) +
   geom_point(aes(color = position, shape = position)) +
   geom_line(aes(color = position, lty = position)) +
@@ -88,7 +90,7 @@ ggsave("Figures and Tables/Arizona and Illinois Data by Year.png",
 compute_threshold_shares <- function(positions, state_label,
                                      bill_var = "bill_name") {
   
-  bill_counts <- positions |>
+  bill_counts <- positions %>%
     count(!!sym(bill_var), name = "n_positions")
   
   total_bills <- nrow(bill_counts)
@@ -110,7 +112,7 @@ shares_il <- compute_threshold_shares(positions_il, "Illinois")
 shares_az <- compute_threshold_shares(positions_az, "Arizona")
 
 # Combine into single dataframe
-shares <- bind_rows(shares_il, shares_az) |>
+shares <- bind_rows(shares_il, shares_az) %>%
   mutate(threshold_label = factor(threshold_label,
                                   levels = paste0("\u2265 ", format(
                                     c(10, 100, 1000, 10000), big.mark = ","))))
@@ -140,14 +142,45 @@ ggplot(shares, aes(x = threshold_label, y = pct, fill = state)) +
   )
 
 # Save plot
-ggsave("Figures and Tables/Mobilization per Bill.png",
+ggsave("Figures and Tables/Total Mobilization per Bill.png",
        width = 12, height = 6)
 
 ### Examine Participation by Group by Bill -------------------------------------
-# Slips by the same group on the same bill
-slips %>%
-  filter(!(is.na(group_name))) %>%
-  group_by(session, bill_name, group_name) %>%
-  summarize(num_witnesses = n()) %>%
-  arrange(desc(num_witnesses)) %>%
-  view()
+# Calculate the counts of group-specific position-taking per bill in Illinois
+group_bill_counts <- positions_il %>%
+  filter(group_affiliated == "Group-Affiliated", !is.na(group_name)) %>%
+  count(group_name, bill_name, name = "n_positions")
+
+# Specify thresholds
+thresholds <- c(10, 100, 1000)
+
+# Create table with labels
+threshold_counts <- tibble(
+  threshold       = thresholds,
+  threshold_label = paste0("\u2265 ", format(thresholds, big.mark = ",")),
+  n_instances     = map_int(thresholds, ~ sum(group_bill_counts$n_positions >= .x))
+) %>%
+  mutate(threshold_label = factor(threshold_label, levels = threshold_label))
+
+# Create plot
+ggplot(threshold_counts, aes(x = threshold_label, y = n_instances)) +
+  geom_col(fill = "black", width = 0.55) +
+  geom_text(aes(label = format(n_instances, big.mark = ",")),
+            vjust = -0.4, size = 4.2, fontface = "bold") +
+  scale_y_continuous(labels = scales::comma,
+                     expand = expansion(mult = c(0, 0.12))) +
+  labs(
+    x        = "Threshold (positions by members of the same group on the same bill)",
+    y        = "Group\u2013bill pairs"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid.major.x = element_blank(),
+    plot.title          = element_text(face = "bold"),
+    plot.subtitle       = element_text(color = "grey40")
+  )
+
+# Save plot
+ggsave("Figures and Tables/Group Mobilization per Bill (Illinois).png",
+       width = 12, height = 6)
+
