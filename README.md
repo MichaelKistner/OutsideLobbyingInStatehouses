@@ -66,25 +66,36 @@ git clone https://github.com/MichaelKistner/OutsideLobbyingInStatehouses.git
 
 ### 2. Set up Dropbox data access
 
-The data files are shared via a Dropbox folder called **Outside Lobbying in Statehouses**. Make sure this folder is synced to your machine (not "online only").
+The data files are shared via a Dropbox folder called **Outside Lobbying in Statehouses**. Make sure this folder is synced to your machine — it must be downloaded locally, not set to "online only." (In Dropbox, right-click the folder → Smart Sync → Local.)
 
-Copy or symlink the data into the cloned repo so your code can find it:
+Next, find the full path to the shared folder on your machine. The easiest way: open the folder in File Explorer (Windows) or Finder (Mac), click the address bar, and copy the path. It will look something like:
 
-**Option A — Symlink (recommended, no duplication):**
+- `C:\Users\mkistner\Dropbox\Research Projects\Outside Lobbying in Statehouses` (Windows)
+- `/Users/jdoe/Dropbox/Outside Lobbying in Statehouses` (Mac)
 
-```bash
-# macOS / Linux
-cd OutsideLobbyingInStatehouses
-ln -s "/path/to/Dropbox/Outside Lobbying in Statehouses/Initial Data" "Initial Data"
-ln -s "/path/to/Dropbox/Outside Lobbying in Statehouses/Processed Data" "Processed Data"
+The exact path differs for each collaborator — that's expected.
 
-# Windows (run as Administrator)
-cd OutsideLobbyingInStatehouses
-mklink /D "Initial Data" "C:\Users\YOU\Dropbox\Outside Lobbying in Statehouses\Initial Data"
-mklink /D "Processed Data" "C:\Users\YOU\Dropbox\Outside Lobbying in Statehouses\Processed Data"
+Now create symlinks from the cloned repo to the Dropbox data:
+
+**Windows** (run Command Prompt as Administrator):
+
+```
+cd "C:\GitHub Project Repos\OutsideLobbyingInStatehouses"
+mklink /D "Initial Data" "YOUR_DROPBOX_PATH\Initial Data"
+mklink /D "Processed Data" "YOUR_DROPBOX_PATH\Processed Data"
 ```
 
-**Option B — Copy the folders directly** into the repo root. They are gitignored, so they won't be committed.
+**macOS / Linux:**
+
+```bash
+cd ~/Research/OutsideLobbyingInStatehouses
+ln -s "YOUR_DROPBOX_PATH/Initial Data" "Initial Data"
+ln -s "YOUR_DROPBOX_PATH/Processed Data" "Processed Data"
+```
+
+Replace `YOUR_DROPBOX_PATH` with the full path you copied above.
+
+**Alternative — Copy the folders directly** into the repo root instead of symlinking. They are gitignored, so they won't be committed. This uses more disk space but avoids symlinks if you're not comfortable with them.
 
 ### 3. Install R packages with renv
 
@@ -135,7 +146,7 @@ Then open a pull request on GitHub for review before merging.
 
 ### Naming convention for branches
 
-Use your initials and a short description: `mk/descriptive-name`, `bs/model-comparison`, etc.
+Use your initials and a short description: `mk/descriptive-name`, `jd/model-comparison`, etc.
 
 ### What goes where
 
@@ -166,5 +177,4 @@ State-level lobbying position data. See `Initial Data/CHORUS/CHORUS README.pdf` 
 ## Contributors
 
 - Michael Kistner
-- Geoff Lorenz
-- Boris Shor
+- [Add collaborator names here]
