@@ -1,12 +1,48 @@
-# Ignore data and data folders
+# ============================================================
+# Outside Lobbying in Statehouses — .gitignore
+# ============================================================
+
+# ------ R / RStudio user files ------
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
-Initial Data
-Processed Data
+
+# ------ Data (lives in shared Dropbox, not Git) ------
+Initial Data/
+Processed Data/
 *.csv
 *.dta
 *.RData
 *.rda
 *.rds
+*.parquet
+
+# ------ Literature & meeting notes (lives in Dropbox) ------
+Literature/
+Meetings and Feedback/
+
+# ------ Generated output (regenerate from code) ------
+# Uncomment the next two lines if you want figures rebuilt
+# from code rather than version-controlled:
+# Figures and Tables/
+# *.png
+
+# ------ renv (track lockfile, not installed packages) ------
+renv/library/
+renv/staging/
+renv/sandbox/
+renv/cellar/
+renv/local/
+renv/lock/
+renv/python/
+
+# ------ OS junk ------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ------ Editor / IDE ------
+*.swp
+*~
+.vscode/
