@@ -12,6 +12,14 @@ clients <- read_parquet("Initial Data/Chorus/clients.parquet")
 # Load slip df for Witness Slips data
 load("Initial Data/Witness Slips/Witness Slips Dataframe (Cleaned).Rda")
 
+# Create helper functions
+fix_text <- function(x) {
+  x <- if_else(validUTF8(x), x, iconv(x, from = "latin1", to = "UTF-8"))
+  x %>%
+    str_replace_all("\u00a0", " ") %>%
+    str_squish()
+}
+
 ### Compare Illinois and Arizona Data Coverage ---------------------------------
 # Get Arizona data and format
 positions_az <- positions %>% 
@@ -35,7 +43,10 @@ positions_az <- positions %>%
 
 # Get Illinois data and format
 positions_il <- slips %>%
-  mutate(state = "IL",
+  mutate() %>%
+  mutate(group_name = fix_text(group_name),
+         state = "IL",
+         year = year(date),
          session = case_when(
            session == "1314" ~ "2013-2014",
            session == "1516" ~ "2015-2016",
@@ -43,7 +54,6 @@ positions_il <- slips %>%
            session == "1920" ~ "2019-2020",
            session == "2122" ~ "2021-2022"
          )) %>%
-  mutate(year = year(date)) %>%
   rename(position_numeric = position,
          position_taker = witness_name) 
 
@@ -120,9 +130,7 @@ shares <- bind_rows(shares_il, shares_az) %>%
 # Create plot
 ggplot(shares, aes(x = threshold_label, y = pct, fill = state)) +
   geom_col(position = position_dodge(width = 0.7), width = 0.6) +
-  geom_text(aes(label = sprintf("%.1f%%\n(%s / %s)", pct,
-                                format(n_bills, big.mark = ","),
-                                format(total, big.mark = ","))),
+  geom_text(aes(label = sprintf("%.1f%%", pct)),
             position = position_dodge(width = 0.7),
             vjust = -0.3, size = 3.2, lineheight = 0.85) +
   scale_fill_manual(values = c("Illinois" = "gray", "Arizona" = "black")) +
@@ -170,7 +178,7 @@ ggplot(threshold_counts, aes(x = threshold_label, y = n_instances)) +
   scale_y_continuous(labels = scales::comma,
                      expand = expansion(mult = c(0, 0.12))) +
   labs(
-    x        = "Threshold (positions by members of the same group on the same bill)",
+    x        = "Positions by members of the same group \n on the same bill",
     y        = "Group\u2013bill pairs"
   ) +
   theme_minimal(base_size = 13) +
