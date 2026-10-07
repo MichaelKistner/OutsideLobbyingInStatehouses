@@ -2,7 +2,7 @@
 
 Data, code, and other materials for *Outside Lobbying in Statehouses*.
 
----
+\---
 
 ## Project Structure
 
@@ -32,7 +32,7 @@ Outside Lobbying in Statehouses (Dropbox)/
 ├── Initial Data/
 │   ├── CHORUS/
 │   │   ├── bills.parquet
-│   │   ├── block_assignments.parquet
+│   │   ├── block\_assignments.parquet
 │   │   ├── clients.parquet
 │   │   ├── positions.parquet
 │   │   ├── CHORUS CODEBOOK.pdf
@@ -54,50 +54,48 @@ Outside Lobbying in Statehouses (Dropbox)/
     └── (meeting notes)
 ```
 
----
+\---
 
 ## Getting Started
 
-### 1. Clone the repository
+### 1\. Clone the repository
 
 ```bash
 git clone https://github.com/MichaelKistner/OutsideLobbyingInStatehouses.git
 ```
 
-### 2. Set up Dropbox data access
+### 2\. Set up Dropbox data access
 
 The data files are shared via a Dropbox folder called **Outside Lobbying in Statehouses**. Make sure this folder is synced to your machine — it must be downloaded locally, not set to "online only." (In Dropbox, right-click the folder → Smart Sync → Local.)
 
 Next, find the full path to the shared folder on your machine. The easiest way: open the folder in File Explorer (Windows) or Finder (Mac), click the address bar, and copy the path. It will look something like:
 
-- `C:\Users\mkistner\Dropbox\Research Projects\Outside Lobbying in Statehouses` (Windows)
-- `/Users/jdoe/Dropbox/Outside Lobbying in Statehouses` (Mac)
-
-The exact path differs for each collaborator — that's expected.
+* `C:\\Users\\jdoe\\Dropbox\\Research Projects\\Outside Lobbying in Statehouses` (Windows)
+* `/Users/jdoe/Dropbox/Outside Lobbying in Statehouses` (Mac)
 
 Now create symlinks from the cloned repo to the Dropbox data:
 
 **Windows** (run Command Prompt as Administrator):
 
 ```
-cd "C:\GitHub Project Repos\OutsideLobbyingInStatehouses"
-mklink /D "Initial Data" "YOUR_DROPBOX_PATH\Initial Data"
-mklink /D "Processed Data" "YOUR_DROPBOX_PATH\Processed Data"
+cd "C:\\GitHub Project Repos\\OutsideLobbyingInStatehouses"
+mklink /D "Initial Data" "YOUR\_DROPBOX\_PATH\\Initial Data"
+mklink /D "Processed Data" "YOUR\_DROPBOX\_PATH\\Processed Data"
 ```
 
 **macOS / Linux:**
 
 ```bash
-cd ~/Research/OutsideLobbyingInStatehouses
-ln -s "YOUR_DROPBOX_PATH/Initial Data" "Initial Data"
-ln -s "YOUR_DROPBOX_PATH/Processed Data" "Processed Data"
+cd \~/Research/OutsideLobbyingInStatehouses
+ln -s "YOUR\_DROPBOX\_PATH/Initial Data" "Initial Data"
+ln -s "YOUR\_DROPBOX\_PATH/Processed Data" "Processed Data"
 ```
 
-Replace `YOUR_DROPBOX_PATH` with the full path you copied above.
+Replace `YOUR\_DROPBOX\_PATH` with the full path you copied above.
 
 **Alternative — Copy the folders directly** into the repo root instead of symlinking. They are gitignored, so they won't be committed. This uses more disk space but avoids symlinks if you're not comfortable with them.
 
-### 3. Install R packages with renv
+### 3\. Install R packages with renv
 
 On first setup:
 
@@ -110,11 +108,11 @@ renv::restore()
 When you add a new package:
 
 ```r
-install.packages("new_package")
+install.packages("new\_package")
 renv::snapshot()    # updates renv.lock — commit this change
 ```
 
-### 4. Open the RStudio project
+### 4\. Open the RStudio project
 
 Always open the project via `Outside Lobbying in Statehouses.Rproj`. This sets the working directory to the repo root so that all file paths work consistently across machines.
 
@@ -124,11 +122,11 @@ In your R scripts, reference data files with paths relative to the project root:
 library(arrow)
 
 # These paths work for everyone as long as step 2 is done
-positions <- read_parquet("Initial Data/CHORUS/positions.parquet")
+positions <- read\_parquet("Initial Data/CHORUS/positions.parquet")
 slips     <- load("Initial Data/Witness Slips/Witness Slips Dataframe (Cleaned).Rda")
 ```
 
----
+\---
 
 ## Collaboration Workflow
 
@@ -146,21 +144,21 @@ Then open a pull request on GitHub for review before merging.
 
 ### Naming convention for branches
 
-Use your initials and a short description: `mk/descriptive-name`, `jd/model-comparison`, etc.
+Use your initials and a short description: `mk/descriptive-name`, `bs/model-comparison`, etc.
 
 ### What goes where
 
-| Content | Location | Why |
-|---|---|---|
-| R scripts | GitHub | Version control + code review |
-| `.Rproj`, `.gitignore`, `README` | GitHub | Project config |
-| `renv.lock` | GitHub | Reproducible package versions |
-| Raw / processed data | Dropbox | Too large for Git |
-| Literature PDFs | Dropbox | Binary files, no diffing benefit |
-| Meeting notes | Dropbox | Reference material |
-| Generated figures | GitHub (optional) | Convenient for PR review |
+|Content|Location|Why|
+|-|-|-|
+|R scripts|GitHub|Version control + code review|
+|`.Rproj`, `.gitignore`, `README`|GitHub|Project config|
+|`renv.lock`|GitHub|Reproducible package versions|
+|Raw / processed data|Dropbox|Too large for Git|
+|Literature PDFs|Dropbox|Binary files, no diffing benefit|
+|Meeting notes|Dropbox|Reference material|
+|Generated figures|GitHub (optional)|Convenient for PR review|
 
----
+\---
 
 ## Data Sources
 
@@ -172,9 +170,11 @@ Public testimony records from the Illinois General Assembly. See `Initial Data/W
 
 State-level lobbying position data. See `Initial Data/CHORUS/CHORUS README.pdf` and the codebook for schema documentation.
 
----
+\---
 
 ## Contributors
 
-- Michael Kistner
-- [Add collaborator names here]
+* Michael Kistner
+* Boris Shor
+* Geoffrey Lorenz
+
