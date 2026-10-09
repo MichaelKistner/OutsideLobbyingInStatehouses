@@ -42,6 +42,26 @@ positions_az <- positions %>%
   )
 
 # Get Illinois data and format
+positions_il <- positions %>% 
+  filter(state == "IL", year > 2012) %>% # very few examples before this point
+  select(-c(lobbyist_firm_name, committee, docket_number, docket_prefix)) %>%
+  rename(group_name = client_name,
+         position_taker = lobbyist_rep_name,
+         bill_name = description) %>%
+  mutate(
+    session = case_when(
+      year <= 2008 ~ "2007-2008",
+      year <= 2010 ~ "2009-2010",
+      year <= 2012 ~ "2011-2012",
+      year <= 2014 ~ "2013-2014",
+      year <= 2016 ~ "2015-2016",
+      year <= 2018 ~ "2017-2018",
+      year <= 2020 ~ "2019-2020",
+      year <= 2022 ~ "2021-2022",
+    )
+  )
+
+# Get Illinois data and format
 positions_il <- slips %>%
   mutate() %>%
   mutate(group_name = fix_text(group_name),
